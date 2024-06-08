@@ -1,10 +1,4 @@
-#include <rtc.h>
-
-#define UNLOCK_CS_REGISTERS() CSCTL0_H = CSKEY >> 8
-#define LOCK_CS_REGISTERS() CSCTL0_H = 0
-
-#define UNLOCK_RTC_REGISTERS() RTCCTL0_H = RTCKEY >> 8
-#define LOCK_RTC_REGISTERS() RTCCTL0_H = 0
+#include "rtc.h"
 
 volatile rtc_cb_t rtc_callback = NULL;
 
