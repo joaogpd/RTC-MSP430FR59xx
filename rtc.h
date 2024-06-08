@@ -6,6 +6,12 @@
 #include <stddef.h>
 #include <msp430.h>
 
+#define UNLOCK_CS_REGISTERS() CSCTL0_H = CSKEY >> 8
+#define LOCK_CS_REGISTERS() CSCTL0_H = 0
+
+#define UNLOCK_RTC_REGISTERS() RTCCTL0_H = RTCKEY >> 8
+#define LOCK_RTC_REGISTERS() RTCCTL0_H = 0
+
 typedef void(*rtc_cb_t)(void);
 
 typedef struct RTC_data {
@@ -49,8 +55,22 @@ void rtc_enable(bool csinit);
  *
  * @param intmask Should contain a mask for the value to be written in the
  * RTC register responsible for enabling interrupt sources.
+ * @param clear If this is set the previous set interrupt sources will be cleared.
  */
-void rtc_interrupt_enable(uint8_t intmask);
+void rtc_interrupt_enable(uint8_t intmask, bool clear);
+
+/**
+ * Selects what will be the trigger for event interrupt.
+ *
+ * @param event Bitmask for the event that will generate an interrupt. Can be RTCTEV__MIN,
+ * RTCTEV__HOUR, RTCTEV__0000 or RTCTEV_1200.
+ */
+void rtc_event_select(uint8_t event);
+
+/**
+ * Disables the selected interrupt sources by cleaning the corresponding bits.
+ */
+void rtc_interrupt_disable(uint8_t intmask);
 
 /**
  * Initializes RTC module and sets the values in the time registers.

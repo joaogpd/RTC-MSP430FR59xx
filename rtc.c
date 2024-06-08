@@ -21,7 +21,7 @@ void cs_config_rtc(void) {
         SFRIFG1 &= ~OFIFG;
     } while (SFRIFG1 & OFIFG); // Wait for oscillator fault flag to settle
 
-    LOCK_CS_REGISTERS(); // Lock CS
+    LOCK_CS_REGISTERS();
 }
 
 void rtc_enable(bool csinit) {
@@ -38,11 +38,32 @@ void rtc_enable(bool csinit) {
     LOCK_RTC_REGISTERS();
 }
 
-void rtc_interrupt_enable(uint8_t intmask) {
+void rtc_interrupt_enable(uint8_t intmask, bool clear) {
     UNLOCK_RTC_REGISTERS();
 
     RTCCTL1 = RTCHOLD;
-    RTCCTL0 = intmask;
+    if (clear) {
+        RTCCTL0_L = intmask;
+    } else {
+        RTCCTL0_L |= intmask;
+    }
+
+    LOCK_RTC_REGISTERS();
+}
+
+void rtc_event_select(uint8_t event) {
+    UNLOCK_RTC_REGISTERS();
+
+    RTCCTL1 |= event;
+
+    LOCK_RTC_REGISTERS();
+}
+
+void rtc_interrupt_disable(uint8_t intmask) {
+    UNLOCK_RTC_REGISTERS();
+
+    RTCCTL1 = RTCHOLD;
+    RTCCTL0_L &= ~(intmask);
 
     LOCK_RTC_REGISTERS();
 }
