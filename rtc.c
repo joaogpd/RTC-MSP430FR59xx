@@ -6,7 +6,13 @@ void set_rtc_callback(rtc_cb_t cb) {
     rtc_callback = cb;
 }
 
+static void rtc_cs_gpio_init(void) {
+    PJSEL0 |= BIT4 | BIT5;
+}
+
 void cs_config_rtc(void) {
+    rtc_cs_gpio_init();
+
     UNLOCK_CS_REGISTERS();
 
     CSCTL4 &= ~LFXTOFF; // Enable LFXTCLK
